@@ -1,5 +1,5 @@
 export type Answer = {
-  a: String;
+  a?: String;
   E?: Number;
   I?: Number;
   S?: Number;
@@ -10,6 +10,9 @@ export type Answer = {
   "T(F)"?: Number;
   "F(M)"?: Number;
   "F(F)"?: Number;
+  checked?: boolean;
+  id?: string;
+  [id: string]: any;
 };
 
 export type Question = {

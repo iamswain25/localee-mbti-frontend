@@ -15,5 +15,5 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 export const firestore = firebase.firestore();
-export const functions = firebase.functions();
+export const functions = firebase.app().functions("asia-northeast1");
 export const storage = firebase.storage();

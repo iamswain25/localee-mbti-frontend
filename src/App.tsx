@@ -27,8 +27,8 @@ const App: React.FC = () => {
         <Switch>
           <Route path="/" exact component={SelectPeopleFromList} />
           {/* <Route path="/profile/:id" exact component={Result} /> */}
-          <Route path="/test/:id" exact component={MbtiTest8} />
-          <Route path="/result/:id" exact component={Result} />
+          <Route path="/test" exact component={MbtiTest8} />
+          <Route path="/result" exact component={Result} />
         </Switch>
       </div>
     </BrowserRouter>
