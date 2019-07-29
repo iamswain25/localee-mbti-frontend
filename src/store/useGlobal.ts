@@ -25,7 +25,7 @@ const actions = {
 };
 
 const key = "localee-mbti";
-const useGlobal: () => [any, typeof actions] = usePersist(
+const useGlobal: (any?: any) => [any, typeof actions] = usePersist(
   React,
   initialState,
   actions,

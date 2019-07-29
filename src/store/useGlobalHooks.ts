@@ -1,5 +1,5 @@
 export type Store = {
-  listeners: Array<(state: any) => void>;
+  listeners: Array<{ call: any; connect: string | string[] | undefined }>;
   associatedActions: any;
   state: any;
   setState: (state: any) => void;
@@ -9,21 +9,41 @@ export type Store = {
 function setState(this: Store, newState: any) {
   this.state = { ...this.state, ...newState };
   this.listeners.forEach(listener => {
-    listener(this.state);
+    const connected =
+      listener.connect &&
+      Object.keys(newState).some(key => listener.connect!.indexOf(key) >= 0);
+    if (connected) {
+      listener.call(this.state);
+    }
   });
 }
 
-function useCustom(this: Store, React: any): [any, any] {
+function useCustom(
+  this: Store,
+  React: any,
+  connect?: string | string[]
+): [any, any] {
+  // if (arguments.length > 1) console.log(arguments);
+  console.log(this.listeners);
   const newListener = React.useState()[1];
   React.useEffect(() => {
-    this.listeners.push(newListener);
+    const newobj = { call: newListener, connect };
+    this.listeners.push(newobj);
     return () => {
-      this.listeners = this.listeners.filter(
-        listener => listener !== newListener
-      );
+      this.listeners = this.listeners.filter(listener => listener !== newobj);
     };
-  }, [newListener]);
-  return [this.state, this.associatedActions];
+  }, [connect, newListener]);
+  if (typeof connect === "string") {
+    return [this.state[connect], this.associatedActions];
+  } else if (typeof connect === "object") {
+    const state = connect
+      .map(a => ({ [a]: this.state[a] }))
+      .reduce((acc, cur) => ({ ...acc, cur }));
+    return [state, this.associatedActions];
+  } else {
+    return [this.state, this.associatedActions];
+  }
+  // return [this.state, this.associatedActions];
 }
 
 function associateActions(store: Store, actions: any) {
@@ -88,6 +108,11 @@ function setPersistState(this: Store, newState: any) {
   this.state = { ...this.state, ...newState };
   window.localStorage.setItem(this.key!, JSON.stringify(this.state));
   this.listeners.forEach(listener => {
-    listener(this.state);
+    const connected =
+      listener.connect &&
+      Object.keys(newState).some(key => listener.connect!.indexOf(key) >= 0);
+    if (connected) {
+      listener.call(this.state);
+    }
   });
 }

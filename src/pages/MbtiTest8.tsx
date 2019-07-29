@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps, Link } from "react-router-dom";
 import useGlobal from "../store/useGlobal";
 import { functions } from "../firebase";
 import { Question, Answer } from "../@types/Answer";
@@ -58,6 +58,7 @@ export default (props: RouteComponentProps) => {
   }
   return (
     <div style={{ padding: 5 }}>
+      <Link to="/result">a</Link>
       <h1 style={{ textAlign: "center" }}>{profile.name} 성격은 어떤가요?</h1>
       <div>
         {q.map((e, i) => {

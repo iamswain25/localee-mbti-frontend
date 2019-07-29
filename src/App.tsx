@@ -23,6 +23,7 @@ const App: React.FC = () => {
           margin: "0 auto"
         }}
       >
+        <Result />
         {globalState.loading && <Loader />}
         <Switch>
           <Route path="/" exact component={SelectPeopleFromList} />
