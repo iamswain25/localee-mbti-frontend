@@ -9,10 +9,14 @@ export type Store = {
 function setState(this: Store, newState: any) {
   this.state = { ...this.state, ...newState };
   this.listeners.forEach(listener => {
-    const connected =
-      listener.connect &&
-      Object.keys(newState).some(key => listener.connect!.indexOf(key) >= 0);
-    if (connected) {
+    if (listener.connect) {
+      const connected = Object.keys(newState).some(
+        key => listener.connect!.indexOf(key) >= 0
+      );
+      if (connected) {
+        listener.call(this.state);
+      }
+    } else {
       listener.call(this.state);
     }
   });
@@ -24,7 +28,7 @@ function useCustom(
   connect?: string | string[]
 ): [any, any] {
   // if (arguments.length > 1) console.log(arguments);
-  console.log(this.listeners);
+  // console.log(this.listeners);
   const newListener = React.useState()[1];
   React.useEffect(() => {
     const newobj = { call: newListener, connect };
@@ -33,17 +37,17 @@ function useCustom(
       this.listeners = this.listeners.filter(listener => listener !== newobj);
     };
   }, [connect, newListener]);
-  if (typeof connect === "string") {
-    return [this.state[connect], this.associatedActions];
-  } else if (typeof connect === "object") {
-    const state = connect
-      .map(a => ({ [a]: this.state[a] }))
-      .reduce((acc, cur) => ({ ...acc, cur }));
-    return [state, this.associatedActions];
-  } else {
-    return [this.state, this.associatedActions];
-  }
-  // return [this.state, this.associatedActions];
+  // if (typeof connect === "string") {
+  //   return [this.state[connect], this.associatedActions];
+  // } else if (typeof connect === "object") {
+  //   const state = connect
+  //     .map(a => ({ [a]: this.state[a] }))
+  //     .reduce((acc, cur) => ({ ...acc, cur }));
+  //   return [state, this.associatedActions];
+  // } else {
+  //   return [this.state, this.associatedActions];
+  // }
+  return [this.state, this.associatedActions];
 }
 
 function associateActions(store: Store, actions: any) {
@@ -80,10 +84,11 @@ const useStore = (
 export default useStore;
 
 export const usePersist = (
+  key: string,
   React: any,
   initialState: any,
   actions: any,
-  key: string
+  initializer?: (store: Store) => void
 ) => {
   if (typeof key !== "string") {
     console.error("must have key as string value");
@@ -101,6 +106,7 @@ export const usePersist = (
   };
   store.setState = setPersistState.bind(store);
   store.associatedActions = associateActions(store, actions);
+  if (initializer) initializer(store);
   return useCustom.bind(store, React);
 };
 
@@ -108,10 +114,14 @@ function setPersistState(this: Store, newState: any) {
   this.state = { ...this.state, ...newState };
   window.localStorage.setItem(this.key!, JSON.stringify(this.state));
   this.listeners.forEach(listener => {
-    const connected =
-      listener.connect &&
-      Object.keys(newState).some(key => listener.connect!.indexOf(key) >= 0);
-    if (connected) {
+    if (listener.connect) {
+      const connected = Object.keys(newState).some(
+        key => listener.connect!.indexOf(key) >= 0
+      );
+      if (connected) {
+        listener.call(this.state);
+      }
+    } else {
       listener.call(this.state);
     }
   });

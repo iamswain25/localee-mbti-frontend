@@ -12,9 +12,11 @@
     "firebase": "^6.2.4",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-dropzone": "^10.1.7",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
-    "typescript": "3.5.3"
+    "typescript": "3.5.3",
+    "unfurl.js": "^3.0.1"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -1,10 +1,9 @@
 import React from "react";
-import useStore, { usePersist, Store } from "./useGlobalHooks";
+import { usePersist } from "./useGlobalHooks";
 
 const initialState = {
   loading: true,
   profile: {
-    id: null,
     name: null
   }
 };
@@ -26,10 +25,10 @@ const actions = {
 
 const key = "localee-mbti";
 const useGlobal: (any?: any) => [any, typeof actions] = usePersist(
+  key,
   React,
   initialState,
-  actions,
-  key
+  actions
 );
 // const useGlobal = useStore(React, initialState, actions);
 export default useGlobal;

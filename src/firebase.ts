@@ -8,7 +8,7 @@ const firebaseConfig = {
   authDomain: "mbti-localee.firebaseapp.com",
   databaseURL: "https://mbti-localee.firebaseio.com",
   projectId: "mbti-localee",
-  storageBucket: "",
+  storageBucket: "mbti-localee.appspot.com",
   messagingSenderId: "183233227917",
   appId: "1:183233227917:web:6e695886d224aad2"
 };

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { RouteComponentProps, Link } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 import useGlobal from "../store/useGlobal";
 import { functions } from "../firebase";
 import { Question, Answer } from "../@types/Answer";
 import { Checkbox } from "@material-ui/core";
 const questions20 = functions.httpsCallable("questionsCall");
+const answersCall = functions.httpsCallable("answersCall");
 export default (props: RouteComponentProps) => {
-  const [globalState, globalActions] = useGlobal();
-  const { profile } = globalState;
+  const [{ profile }, globalActions] = useGlobal();
   const [q, setQ] = useState<Question[]>([]);
   useEffect(() => {
     globalActions.setLoading(true);
@@ -50,15 +50,26 @@ export default (props: RouteComponentProps) => {
           return pre;
         }, {});
       console.log(scores);
-      // scores.id = props.id;
-      // props.answerQ(scores);
+      scores.id = profile.name;
+      answersCall(scores)
+        .then(res => res.data)
+        .then(({ mbti, counter, myResult }) =>
+          globalActions.setProfile({ ...profile, mbti, counter, myResult })
+        )
+        .then(() => props.history.push("/result"));
     } else {
       alert("8개 문항을 모두 체크하셔야 합니다.");
     }
   }
   return (
     <div style={{ padding: 5 }}>
-      <Link to="/result">a</Link>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <img
+          src={profile.link}
+          alt="profile img"
+          style={{ width: 300, objectFit: "contain" }}
+        />
+      </div>
       <h1 style={{ textAlign: "center" }}>{profile.name} 성격은 어떤가요?</h1>
       <div>
         {q.map((e, i) => {
@@ -78,8 +89,7 @@ export default (props: RouteComponentProps) => {
                 }}
               >
                 {answers.map((answer, i) => {
-                  const { a, checked, ...rest } = answer;
-                  const name = JSON.stringify(rest);
+                  const { a, checked } = answer;
                   return (
                     <button
                       onClick={radioChangeHandler.bind(null, index, i)}
