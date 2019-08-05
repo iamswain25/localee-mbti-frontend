@@ -8,9 +8,11 @@ export default (props: RouteProps) => {
       <NavLink to="/" style={{ marginLeft: 10 }}>
         Home
       </NavLink>
-      <NavLink to="test" style={{ marginLeft: 10 }}>
-        {profile.myResult ? "test again" : "test"}
-      </NavLink>
+      {profile.name && (
+        <NavLink to="test" style={{ marginLeft: 10 }}>
+          {profile.myResult ? "test again" : "test"}
+        </NavLink>
+      )}
       {profile.myResult && (
         <NavLink to="result" style={{ marginLeft: 10 }}>
           Result
