@@ -49,13 +49,11 @@ export default (props: RouteComponentProps) => {
           });
           return pre;
         }, {});
-      console.log(scores);
       scores.id = profile.name;
+      console.log(scores);
       answersCall(scores)
         .then(res => res.data)
-        .then(({ mbti, counter, myResult }) =>
-          globalActions.setProfile({ ...profile, mbti, counter, myResult })
-        )
+        .then(res => globalActions.setResult({ profile, ...res }))
         .then(() => props.history.push("/result"));
     } else {
       alert("8개 문항을 모두 체크하셔야 합니다.");

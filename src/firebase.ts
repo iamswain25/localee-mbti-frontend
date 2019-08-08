@@ -14,6 +14,11 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+export default firebase;
 export const firestore = firebase.firestore();
 export const functions = firebase.app().functions("asia-northeast1");
+if (process.env.NODE_ENV === "development") {
+  functions.useFunctionsEmulator("http://localhost:5000");
+}
+
 export const storage = firebase.storage();

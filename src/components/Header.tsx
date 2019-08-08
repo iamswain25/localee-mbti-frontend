@@ -2,7 +2,7 @@ import React from "react";
 import useGlobal from "../store/useGlobal";
 import { RouteProps, NavLink } from "react-router-dom";
 export default (props: RouteProps) => {
-  const [profile] = useGlobal("profile");
+  const [{ profile, result }] = useGlobal("profile");
   return (
     <div>
       <NavLink to="/" style={{ marginLeft: 10 }}>
@@ -10,10 +10,14 @@ export default (props: RouteProps) => {
       </NavLink>
       {profile.name && (
         <NavLink to="test" style={{ marginLeft: 10 }}>
-          {profile.myResult ? "test again" : "test"}
+          {result &&
+          result.length > 0 &&
+          result[result.length - 1].name === profile.name
+            ? "test again"
+            : "test"}
         </NavLink>
       )}
-      {profile.myResult && (
+      {result && result.length > 0 && (
         <NavLink to="result" style={{ marginLeft: 10 }}>
           Result
         </NavLink>
