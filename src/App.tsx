@@ -17,7 +17,7 @@ const App: React.FC = () => {
         style={{
           padding: "0px 1.0875rem 1.45rem",
           paddingTop: 0,
-          maxWidth: 960,
+          // maxWidth: 960,
           margin: "0 auto"
         }}
       >

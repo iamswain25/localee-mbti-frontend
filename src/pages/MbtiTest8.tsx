@@ -1,21 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import useGlobal from "../store/useGlobal";
+import usePersist from "../store/usePersist";
 import { functions } from "../firebase";
 import { Question, Answer } from "../@types/Answer";
 import { Checkbox } from "@material-ui/core";
 const questions20 = functions.httpsCallable("questionsCall");
 const answersCall = functions.httpsCallable("answersCall");
+let answersDocId = null; //여기서 시작, 정답 넣을 때 마다 firestore에 올리기
 export default (props: RouteComponentProps) => {
-  const [{ profile }, globalActions] = useGlobal();
+  const persistActions = usePersist()[1];
+  const [{ profile, loading }, globalActions] = useGlobal();
   const [q, setQ] = useState<Question[]>([]);
   useEffect(() => {
     globalActions.setLoading(true);
-    questions20()
-      .then(r => r.data)
-      .then(r => setQ(r))
+    const { search } = props.location;
+    if (!search.length) {
+      alert("no person's name");
+      props.history.goBack();
+      return;
+    }
+    const params = new URLSearchParams(search);
+    const name = params.get("name");
+    const link = params.get("link");
+    globalActions.setProfile({ name, link });
+    questions20({ name, link })
+      .then(r => {
+        setQ(r.data.questions);
+        answersDocId = r.data.answersDocId;
+      })
       .finally(globalActions.loadingIndicatorOff);
-  }, [globalActions, globalActions.setLoading]);
+  }, [
+    globalActions,
+    globalActions.setLoading,
+    props.history,
+    props.location,
+    props.location.search
+  ]);
   function radioChangeHandler(index: Number, checkedIndex: Number) {
     console.log(index, checkedIndex);
     const qe = q.find(a => a.index === index);
@@ -53,11 +74,14 @@ export default (props: RouteComponentProps) => {
       console.log(scores);
       answersCall(scores)
         .then(res => res.data)
-        .then(res => globalActions.setResult({ profile, ...res }))
+        .then(res => persistActions.setResult({ profile, ...res }))
         .then(() => props.history.push("/result"));
     } else {
       alert("8개 문항을 모두 체크하셔야 합니다.");
     }
+  }
+  if (loading) {
+    return null;
   }
   return (
     <div style={{ padding: 5 }}>

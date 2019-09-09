@@ -5,18 +5,24 @@ import { RouteComponentProps } from "react-router-dom";
 const selectionList = functions.httpsCallable("selectionList");
 type Profile = { counter: number; name: string; link: string };
 export default (props: RouteComponentProps) => {
-  const globalActions = useGlobal()[1];
+  const [{ loading }, globalActions] = useGlobal();
   const [list, setList] = useState([]);
   useEffect(() => {
-    globalActions.setLoading(true);
+    globalActions.loadingIndicatorOn();
     selectionList()
       .then(res => res.data)
       .then(setList)
       .finally(globalActions.loadingIndicatorOff);
-  }, [globalActions, globalActions.setLoading]);
+  }, [globalActions]);
   function takeTestHandler(args: Profile) {
-    globalActions.setProfile(args);
-    props.history.push(`/test`);
+    // globalActions.setProfile(args);
+    const { name, link } = args;
+    const params = new URLSearchParams({ name, link });
+    props.history.push(`/test?${params.toString()}`);
+    // props.history.push(`/test?name=${encodeURI(args.name)}`);
+  }
+  if (loading) {
+    return null;
   }
   return (
     <div>
@@ -28,19 +34,27 @@ export default (props: RouteComponentProps) => {
           style={{
             display: "flex",
             flexDirection: "row",
-            flexWrap: "wrap",
-            justifyContent: "space-around"
+            flexWrap: "wrap"
           }}
         >
           {list.map((e: Profile, i) => (
-            <div key={i} style={{ padding: 10 }}>
-              <div>
-                <img
-                  src={e.link}
-                  alt="profile img"
-                  style={{ width: 200, objectFit: "contain" }}
-                />
-              </div>
+            <div
+              key={i}
+              style={{
+                padding: 10,
+                width: 400,
+                textAlign: "center"
+              }}
+            >
+              <img
+                src={e.link}
+                alt="profile img"
+                style={{
+                  width: 200,
+                  objectFit: "cover",
+                  height: 200
+                }}
+              />
               <div>
                 {String(e.counter)}명의 사람이 {e.name} 성격을 분석하였습니다.
               </div>
