@@ -1,9 +1,8 @@
 import React from "react";
 import { usePersist } from "./useGlobalHooks";
-
-const initialState = {
-  result: []
-};
+import { Result } from "../@types/Result";
+// const result = [] as Result[];
+const initialState = { result: [] as Result[] };
 
 const actions = {
   setResult(this: any, args: any) {
@@ -16,11 +15,13 @@ const actions = {
 };
 
 const key = "localee-mbti";
-const usePersistGlobal: (args?: any) => [any, typeof actions] = usePersist(
-  key,
-  React,
-  initialState,
-  actions
-);
+// function useMemo<T>(factory: () => T, deps: DependencyList | undefined): T;
+// function usePersistGlobal<T>(args?: any): [T, typeof actions] {
+//   return usePersist<T>(key, React, initialState, actions);
+// }
+
+const usePersistGlobal: (args?: any) => [any, typeof actions] = usePersist<{
+  result: Result[];
+}>(key, React, initialState, actions);
 
 export default usePersistGlobal;

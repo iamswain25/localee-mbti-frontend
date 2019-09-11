@@ -4,7 +4,8 @@ import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { firestore /* storage */ } from "../firebase";
 import { Radio, RadioGroup, FormControlLabel } from "@material-ui/core";
-import unfurl from "unfurl.js/dist/index.js";
+const { unfurl } = require("unfurl.js");
+// import { unfurl } from "unfurl.js/src/index";
 let nameInput: HTMLInputElement | null;
 // let imgInput: Files;
 export default (props: RouteComponentProps) => {

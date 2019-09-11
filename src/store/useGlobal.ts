@@ -2,7 +2,7 @@ import React from "react";
 import useStore from "./useGlobalHooks";
 
 const initialState = {
-  loading: true,
+  loading: false,
   profile: {
     name: null
   }

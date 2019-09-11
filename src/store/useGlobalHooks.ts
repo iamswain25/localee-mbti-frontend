@@ -22,11 +22,11 @@ function setState(this: Store, newState: any) {
   });
 }
 
-function useCustom(
+function useCustom<T>(
   this: Store,
   React: any,
   ...connects: Array<string | string[]>
-): [any, any] {
+): [T, any] {
   const newListener = React.useState()[1];
   const connect: string[] = connects.flat();
   React.useEffect(() => {
@@ -72,13 +72,13 @@ const useStore = (
 
 export default useStore;
 
-export const usePersist = (
+export function usePersist<T>(
   key: string,
   React: any,
   initialState: any,
   actions: any,
   initializer?: (store: Store) => void
-) => {
+) {
   if (typeof key !== "string") {
     console.error("must have key as string value");
   }
@@ -96,8 +96,8 @@ export const usePersist = (
   store.setState = setPersistState.bind(store);
   store.associatedActions = associateActions(store, actions);
   if (initializer) initializer(store);
-  return useCustom.bind(store, React);
-};
+  return useCustom.bind<Store, any, [T, any]>(store, React);
+}
 
 function setPersistState(this: Store, newState: any) {
   this.state = { ...this.state, ...newState };

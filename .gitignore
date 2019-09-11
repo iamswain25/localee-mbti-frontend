@@ -5,6 +5,7 @@
 /.pnp
 .pnp.js
 /dev
+/expo
 
 # testing
 /coverage
