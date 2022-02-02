@@ -1,96 +1,58 @@
 import React from "react";
-// import useGlobal from "../store/useGlobal";
-// import Preview, { Files } from "../components/Preview";
-import { RouteComponentProps } from "react-router-dom";
-import { firestore /* storage */ } from "../firebase";
+import { firestore, storage } from "../firebase";
 import { Radio, RadioGroup, FormControlLabel } from "@material-ui/core";
-const { unfurl } = require("unfurl.js");
-// import { unfurl } from "unfurl.js/src/index";
-let nameInput: HTMLInputElement | null;
-// let imgInput: Files;
-export default (props: RouteComponentProps) => {
-  // const [{ profile } /* globalActions */] = useGlobal("profile");
+import { useNavigate } from "react-router";
+import Preview from "../components/Preview";
+import { useAtom } from "jotai";
+import { filesAtom, loadingAtom } from "../store/jotai";
+export default function UploadProfile() {
+  const [, setLoading] = useAtom(loadingAtom);
+  const navigate = useNavigate();
   const [gender, setGender] = React.useState("");
-  const [name, setName] = React.useState("");
-  const [link, setLink] = React.useState("");
+  const [files] = useAtom(filesAtom);
+  const nameRef = React.useRef<HTMLInputElement>(null);
   async function checkName() {
-    const unControlledName = nameInput!.value;
-    if (unControlledName.length < 1) {
-      // alert("이름을 입력하세요.");
-      return;
-    }
+    const unControlledName = nameRef.current?.value;
+    if (!unControlledName) return;
     const exists = await firestore
       .collection("profile")
       .doc(unControlledName!)
       .get()
-      .then(res => res.exists);
+      .then((res) => res.exists);
+    if (!nameRef.current) return;
     if (exists) {
-      nameInput!.style.border = "2px solid red";
-      alert("이미 존재하는 이름입니다.");
+      nameRef.current.style.border = "2px solid red";
+      window.alert("이미 존재하는 이름입니다.");
     } else {
-      nameInput!.style.border = "2px solid green";
-      setName(unControlledName);
+      nameRef.current.style.border = "2px solid green";
     }
-    return exists;
+    return unControlledName;
   }
   async function submit() {
-    if (gender.length < 1) {
-      alert("성별을 확인하세요.");
-      return;
-    }
-    // if (!imgInput[0]) {
-    //   alert("사진을 업로드하세요.");
-    //   return;
-    // }
-    if (name.length < 1) {
-      return;
-    }
-    if (link.length < 1) {
-      return;
-    }
-    console.log(name);
-    console.log(gender);
-    firestore
-      .collection("profile")
-      .doc(name)
-      .set({ counter: 0, gender, name, link, createdAt: new Date() })
+    const name = await checkName();
+    if (!name) return window.alert("이름을 입력하세요.");
+    if (!gender) return alert("성별을 확인하세요.");
+    if (!files[0]) return window.alert("사진을 첨부하세요.");
+    setLoading(true);
+    return storage
+      .ref("profile")
+      .child(name)
+      .put(files[0])
+      .then(() =>
+        firestore
+          .collection("profile")
+          .doc(name)
+          .set({ counter: 0, gender, name, createdAt: new Date() })
+      )
       .then(console.log)
-      .then(() => props.history.push("/"))
-      .catch(alert);
-    // console.log(imgInput[0]);
-    // storage
-    //   .ref()
-    //   .child(`profiles/${name}`)
-    //   .put(imgInput[0])
-    //   .then(console.log)
-    //   .then(() =>
-    //     firestore
-    //       .collection("profile")
-    //       .doc(name)
-    //       .set({ counter: 0, gender, name })
-    //   )
-    //   .then(console.log)
-    //   .catch(alert);
-  }
-  function imgOnError() {
-    unfurl(link)
-      .then(({ open_graph }: { open_graph: any }) => {
-        const { images } = open_graph;
-        const [image] = images;
-        const { url } = image;
-        setLink(url);
-      })
-      .catch(console.error);
+      .then(() => navigate("/"))
+      .catch(window.alert)
+      .finally(() => setLoading(false));
   }
   return (
     <div>
       <h3>1. 이름을 입력하세요</h3>
-      <input
-        type="text"
-        ref={r => (nameInput = r)}
-        maxLength={20}
-        onBlur={checkName}
-      />
+      <input type="text" ref={nameRef} maxLength={20} onBlur={checkName} />
       <h3>2. 성별을 입력하세요</h3>
       <RadioGroup
         aria-label="gender"
@@ -101,21 +63,9 @@ export default (props: RouteComponentProps) => {
         <FormControlLabel value="F" control={<Radio />} label="여자" />
         <FormControlLabel value="M" control={<Radio />} label="남자" />
       </RadioGroup>
-      <h3>3. 사진을 링크로 거세요</h3>
-      <div>
-        <input
-          type="text"
-          onChange={e => setLink(e.target.value)}
-          value={link}
-        />
-      </div>
-      {link.length > 0 && (
-        <div>
-          <img src={link} alt="profile img" onError={imgOnError} />
-        </div>
-      )}
-      {/* <Preview getFiles={r => (imgInput = r)} /> */}
+      <h3>3. 사진을 업로드 하세요</h3>
+      <Preview />
       <button onClick={submit}>전송</button>
     </div>
   );
-};
+}

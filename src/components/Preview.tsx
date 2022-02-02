@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import { useAtom } from "jotai";
+import React, { useEffect } from "react";
 import { useDropzone } from "react-dropzone";
+import { filesAtom } from "../store/jotai";
 
 const thumbsContainer: React.CSSProperties = {
   display: "flex",
   flexDirection: "row",
   flexWrap: "wrap",
-  marginTop: 16
+  marginTop: 16,
 };
 
 const thumb: React.CSSProperties = {
@@ -17,42 +19,41 @@ const thumb: React.CSSProperties = {
   width: 300,
   height: 300,
   padding: 4,
-  boxSizing: "border-box"
+  boxSizing: "border-box",
 };
 
 const thumbInner: React.CSSProperties = {
   display: "flex",
   minWidth: 0,
-  overflow: "hidden"
+  overflow: "hidden",
 };
 
 const img: React.CSSProperties = {
   display: "block",
   width: "auto",
-  height: "100%"
+  height: "100%",
 };
 export type Files = Array<File & { preview: string }>;
-export default function Previews(props: { getFiles: (files: Files) => void }) {
-  const [files, setFiles] = useState<Files>([]);
-  props.getFiles(files);
+export default function Preview() {
+  const [files, setFiles] = useAtom(filesAtom);
   const { getRootProps, getInputProps } = useDropzone({
     accept: "image/*",
     multiple: false,
-    onDrop: acceptedFiles => {
+    onDrop: (acceptedFiles) => {
       setFiles(
-        acceptedFiles.map(file =>
+        acceptedFiles.map((file) =>
           Object.assign(file, {
-            preview: URL.createObjectURL(file)
+            preview: URL.createObjectURL(file),
           })
         )
       );
-    }
+    },
   });
 
-  const thumbs = files.map(file => (
+  const thumbs = files.map((file) => (
     <div style={thumb} key={file.name}>
       <div style={thumbInner}>
-        <img src={file.preview} style={img} />
+        <img src={file.preview} style={img} alt="preview" />
       </div>
     </div>
   ));
@@ -60,7 +61,7 @@ export default function Previews(props: { getFiles: (files: Files) => void }) {
   useEffect(
     () => () => {
       // Make sure to revoke the data uris to avoid memory leaks
-      files.forEach(file => URL.revokeObjectURL(file.preview));
+      files.forEach((file) => URL.revokeObjectURL(file.preview));
     },
     [files]
   );

@@ -1,71 +1,52 @@
 import React, { useEffect, useState } from "react";
-import useGlobal from "../store/useGlobal";
 import { functions } from "../firebase";
-import { RouteComponentProps } from "react-router-dom";
+import { useAtom } from "jotai";
+import { loadingAtom } from "../store/jotai";
+import ProfileImage from "../components/ProfileImage";
 const selectionList = functions.httpsCallable("selectionList");
 type Profile = { counter: number; name: string; link: string };
-export default (props: RouteComponentProps) => {
-  const [{ loading }, globalActions] = useGlobal();
+export default function SelectPeopleFromList() {
+  const [loading, setLoading] = useAtom(loadingAtom);
   const [list, setList] = useState([]);
   useEffect(() => {
-    globalActions.loadingIndicatorOn();
+    setLoading(true);
     selectionList()
-      .then(res => res.data)
+      .then((res) => res.data)
       .then(setList)
-      .finally(globalActions.loadingIndicatorOff);
-  }, [globalActions]);
-  function takeTestHandler(args: Profile) {
-    // globalActions.setProfile(args);
-    const { name, link } = args;
-    const params = new URLSearchParams({ name, link });
-    props.history.push(`/test?${params.toString()}`);
-    // props.history.push(`/test?name=${encodeURI(args.name)}`);
-  }
-  if (loading) {
-    return null;
-  }
+      .finally(() => setLoading(false));
+  }, [setLoading]);
+  if (loading) return null;
   return (
     <div>
       <div style={{ padding: 20 }}>
         <h1 style={{ textAlign: "center", fontSize: 40 }}>
-          이 사람의 성격은 어떨까요?
+          사람들이 생각하는 이 사람의 MBTI는 무엇일까요? 8개 질문에 참여하고
+          통계를 확인해보세요!
         </h1>
         <div
           style={{
             display: "flex",
             flexDirection: "row",
-            flexWrap: "wrap"
+            flexWrap: "wrap",
           }}
         >
           {list.map((e: Profile, i) => (
-            <div
+            <a
               key={i}
+              href={`/test/${e.name}`}
               style={{
                 padding: 10,
                 width: 400,
-                textAlign: "center"
+                textAlign: "center",
               }}
             >
-              <img
-                src={e.link}
-                alt="profile img"
-                style={{
-                  width: 200,
-                  objectFit: "cover",
-                  height: 200
-                }}
-              />
-              <div>
-                {String(e.counter)}명의 사람이 {e.name} 성격을 분석하였습니다.
-              </div>
-              <div>분석에 참여하고 결과를 확인하세요!</div>
-              <div>
-                <button onClick={() => takeTestHandler(e)}>선택</button>
-              </div>
-            </div>
+              <h4>{e.name}</h4>
+              <ProfileImage profile={e} />
+              <div>{String(e.counter)}명 참가</div>
+            </a>
           ))}
         </div>
       </div>
     </div>
   );
-};
+}
