@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/localee-mbti-frontend/static/css/main.e6c13ad2.css",
+    "main.js": "/localee-mbti-frontend/static/js/main.cd6bf64c.js",
+    "index.html": "/localee-mbti-frontend/index.html",
+    "main.e6c13ad2.css.map": "/localee-mbti-frontend/static/css/main.e6c13ad2.css.map",
+    "main.cd6bf64c.js.map": "/localee-mbti-frontend/static/js/main.cd6bf64c.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.cd6bf64c.js"
+  ]
+}
