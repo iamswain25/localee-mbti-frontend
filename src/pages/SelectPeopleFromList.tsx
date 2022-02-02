@@ -3,6 +3,7 @@ import { functions } from "../firebase";
 import { useAtom } from "jotai";
 import { loadingAtom } from "../store/jotai";
 import ProfileImage from "../components/ProfileImage";
+import { Link } from "react-router-dom";
 const selectionList = functions.httpsCallable("selectionList");
 type Profile = { counter: number; name: string; link: string };
 export default function SelectPeopleFromList() {
@@ -31,9 +32,9 @@ export default function SelectPeopleFromList() {
           }}
         >
           {list.map((e: Profile, i) => (
-            <a
+            <Link
               key={i}
-              href={`/test/${e.name}`}
+              to={`/test/${e.name}`}
               style={{
                 padding: 10,
                 width: 400,
@@ -43,7 +44,7 @@ export default function SelectPeopleFromList() {
               <h4>{e.name}</h4>
               <ProfileImage profile={e} />
               <div>{String(e.counter)}명 참가</div>
-            </a>
+            </Link>
           ))}
         </div>
       </div>
