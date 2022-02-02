@@ -6,8 +6,8 @@ import { resultAtom } from "../store/jotai";
 export default function Result() {
   const [r] = useAtom(resultAtom);
   return (
-    <div style={{marginTop: "1rem"}}>
-      <Card headerImage={r?.profile?.link} title={r?.profile?.name}>
+    <div style={{ marginTop: "1rem" }}>
+      <Card headerImage={r?.profile?.link} title={"🧩 " + r?.profile?.name}>
         {Boolean(r?.total?.counter) && (
           <div>
             <StyledBody>

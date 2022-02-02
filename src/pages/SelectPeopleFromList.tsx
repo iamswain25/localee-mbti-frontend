@@ -21,7 +21,7 @@ export default function SelectPeopleFromList() {
     <div>
       <div style={{ padding: 20 }}>
         <h1 style={{ textAlign: "center", fontSize: 40 }}>
-          사람들이 생각하는 이 사람의 MBTI는 무엇일까요? 8개 질문에 참여하고
+          🧩 사람들이 생각하는 이 사람의 MBTI는 무엇일까요? 8개 질문에 참여하고
           통계를 확인해보세요!
         </h1>
         <div
@@ -39,11 +39,13 @@ export default function SelectPeopleFromList() {
                 padding: 10,
                 width: 400,
                 textAlign: "center",
+                textDecoration: "none",
               }}
             >
-              <h4>{e.name}</h4>
+              <h2>
+                🧩 {e.name} ({String(e.counter)}명 참가)
+              </h2>
               <ProfileImage profile={e} />
-              <div>{String(e.counter)}명 참가</div>
             </Link>
           ))}
         </div>

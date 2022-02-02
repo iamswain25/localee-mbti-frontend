@@ -9,9 +9,9 @@ export default function Header() {
   const [loading] = useAtom(loadingAtom);
   return (
     <section>
-      <div>
+      <div style={{ textDecoration: "none" }}>
         <NavLink to="/" style={{ marginLeft: 10 }}>
-          Home
+          🧩 Home
         </NavLink>
         {result.profile && (
           <NavLink to="result" style={{ marginLeft: 10 }}>
