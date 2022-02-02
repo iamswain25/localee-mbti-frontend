@@ -1,7 +1,8 @@
 {
   "name": "mbti-frontend",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
+  "homepage": "https://iamswain25.github.io/localee-mbti-frontend",
   "dependencies": {
     "@material-ui/core": "^4.3.0",
     "@types/jest": "24.0.15",
@@ -28,9 +29,10 @@
     "start": "react-scripts start",
     "functions": "cd functions && npm run serve",
     "build": "react-scripts build",
-    "deploy": "react-scripts build && firebase deploy --only hosting",
+    "deploy": "yarn build && firebase deploy --only hosting",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "bd": "yarn build && gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -46,5 +48,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^3.2.3"
   }
 }
